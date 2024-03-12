@@ -1,143 +1,123 @@
 <template>
-  <div class="content">
-    <div class="md-layout">
-      <div class="md-layout-item">
-        <md-card>
-          <md-card-header data-background-color="green">
-            <h4 class="title">Material Dashboard Heading</h4>
-            <p class="category">Created using Roboto Font Family</p>
-          </md-card-header>
-          <md-card-content>
-            <div id="typography">
-              <div class="title">
-                <h2>Typography</h2>
-              </div>
-              <div class="row">
-                <div class="tim-typo">
-                  <h1>
-                    <span class="tim-note">Header 1</span>The Life of Material
-                    Dashboard
-                  </h1>
-                </div>
-                <div class="tim-typo">
-                  <h2>
-                    <span class="tim-note">Header 2</span>The life of Material
-                    Dashboard
-                  </h2>
-                </div>
-                <div class="tim-typo">
-                  <h3>
-                    <span class="tim-note">Header 3</span>The life of Material
-                    Dashboard
-                  </h3>
-                </div>
-                <div class="tim-typo">
-                  <h4>
-                    <span class="tim-note">Header 4</span>The life of Material
-                    Dashboard
-                  </h4>
-                </div>
-                <div class="tim-typo">
-                  <h5>
-                    <span class="tim-note">Header 5</span>The life of Material
-                    Dashboard
-                  </h5>
-                </div>
-                <div class="tim-typo">
-                  <h6>
-                    <span class="tim-note">Header 6</span>The life of Material
-                    Dashboard
-                  </h6>
-                </div>
-                <div class="tim-typo">
-                  <p>
-                    <span class="tim-note">Paragraph</span>
-                    I will be the leader of a company that ends up being worth
-                    billions of dollars, because I got the answers. I understand
-                    culture. I am the nucleus. I think that’s a responsibility
-                    that I have, to push possibilities, to show people, this is
-                    the level that things could be at.
-                  </p>
-                </div>
-                <div class="tim-typo">
-                  <span class="tim-note">Quote</span>
-                  <blockquote>
-                    <p>
-                      I will be the leader of a company that ends up being worth
-                      billions of dollars, because I got the answers. I
-                      understand culture. I am the nucleus. I think that’s a
-                      responsibility that I have, to push possibilities, to show
-                      people, this is the level that things could be at.
-                    </p>
-                    <small> Kanye West, Musician </small>
-                  </blockquote>
-                </div>
-                <div class="tim-typo">
-                  <span class="tim-note">Muted Text</span>
-                  <p class="text-muted">
-                    I will be the leader of a company that ends up being worth
-                    billions of dollars, because I got the answers...
-                  </p>
-                </div>
-                <div class="tim-typo">
-                  <span class="tim-note">Primary Text</span>
-                  <p class="text-primary">
-                    I will be the leader of a company that ends up being worth
-                    billions of dollars, because I got the answers...
-                  </p>
-                </div>
-                <div class="tim-typo">
-                  <span class="tim-note">Info Text</span>
-                  <p class="text-info">
-                    I will be the leader of a company that ends up being worth
-                    billions of dollars, because I got the answers...
-                  </p>
-                </div>
-                <div class="tim-typo">
-                  <span class="tim-note">Success Text</span>
-                  <p class="text-success">
-                    I will be the leader of a company that ends up being worth
-                    billions of dollars, because I got the answers...
-                  </p>
-                </div>
-                <div class="tim-typo">
-                  <span class="tim-note">Warning Text</span>
-                  <p class="text-warning">
-                    I will be the leader of a company that ends up being worth
-                    billions of dollars, because I got the answers...
-                  </p>
-                </div>
-                <div class="tim-typo">
-                  <span class="tim-note">Danger Text</span>
-                  <p class="text-danger">
-                    I will be the leader of a company that ends up being worth
-                    billions of dollars, because I got the answers...
-                  </p>
-                </div>
-                <div class="tim-typo">
-                  <h2>
-                    <span class="tim-note">Small Tag</span>
-                    Header with small subtitle
-                    <br />
-                    <small>Use "small" tag for the headers</small>
-                  </h2>
-                </div>
-              </div>
+  <div id="chat-container" class="md-layout md-alignment-center-center">
+    <md-card class="md-layout-item md-size-50 md-small-size-100">
+      <md-card-header data-background-color="green">
+        <div class="md-title">防洪减灾问答机器人</div>
+      </md-card-header>
+      <md-card-content>
+        <md-list id="response-container" ref="responseContainer">
+          <md-list-item v-for="(message, index) in messages" :key="index">
+            <div class="md-list-item-text">
+              <b>{{ message.sender === "user" ? "您" : "防洪减灾机器人" }}：</b>
+              {{ message.text }}
             </div>
-          </md-card-content>
-        </md-card>
-      </div>
-    </div>
+          </md-list-item>
+        </md-list>
+        <md-field id="input-container">
+          <md-input
+            v-model="type"
+            style="margin-top: 40px; height: 60px; font-size: 20px !important"
+            @keyup.enter="sendMessage"
+            placeholder="请输入您的问题..."
+          ></md-input>
+          <md-button
+            id="send-button"
+            class="md-primary md-raised large-text"
+            @click="sendMessage"
+            >发送</md-button
+          >
+        </md-field>
+      </md-card-content>
+    </md-card>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-  props: {
-    dataBackgroundColor: {
-      type: String,
-      default: "",
+  data() {
+    return {
+      userInput: "",
+      messages: [],
+    };
+  },
+  methods: {
+    async sendMessage() {
+      const response = await axios.post(
+        "http://localhost:5005/webhooks/rest/webhook",
+        {
+          sender: "user",
+          message: this.userInput,
+        }
+      );
+
+      this.messages.push({
+        sender: "user",
+        text: this.userInput,
+      });
+
+      this.userInput = "";
+
+      response.data.forEach((message) => {
+        this.messages.push({
+          sender: "bot",
+          text: message.text,
+        });
+      });
+
+      this.$nextTick(() => {
+        const container = this.$refs.responseContainer;
+        container.scrollTop = container.scrollHeight;
+      });
     },
   },
 };
 </script>
+
+<style scoped>
+#chat-container {
+  height: 100vh;
+}
+
+.md-card {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+#response-container {
+  height: 300px;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  opacity: 0.7;
+}
+
+#response-container .md-list-item-text {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: rgba(248, 248, 248, 0.6);
+}
+
+#input-container {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.md-input {
+  flex-grow: 1;
+  margin-right: 10px;
+  font-size: 72px !important;
+}
+
+#send-button {
+  min-width: 120px;
+  min-height: 60px;
+}
+
+.large-text {
+  font-size: 16px;
+  line-height: 24px;
+}
+</style>
