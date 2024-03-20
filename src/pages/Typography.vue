@@ -1,123 +1,104 @@
+
 <template>
-  <div id="chat-container" class="md-layout md-alignment-center-center">
-    <md-card class="md-layout-item md-size-50 md-small-size-100">
-      <md-card-header data-background-color="green">
-        <div class="md-title">防洪减灾问答机器人</div>
-      </md-card-header>
-      <md-card-content>
-        <md-list id="response-container" ref="responseContainer">
-          <md-list-item v-for="(message, index) in messages" :key="index">
-            <div class="md-list-item-text">
-              <b>{{ message.sender === "user" ? "您" : "防洪减灾机器人" }}：</b>
-              {{ message.text }}
-            </div>
-          </md-list-item>
-        </md-list>
-        <md-field id="input-container">
-          <md-input
-            v-model="type"
-            style="margin-top: 40px; height: 60px; font-size: 20px !important"
-            @keyup.enter="sendMessage"
-            placeholder="请输入您的问题..."
-          ></md-input>
-          <md-button
-            id="send-button"
-            class="md-primary md-raised large-text"
-            @click="sendMessage"
-            >发送</md-button
-          >
-        </md-field>
-      </md-card-content>
-    </md-card>
+  <div id="chat-container">
+    <div id="response-container"></div>
+    <div id="input-container">
+      <input type="text" id="message-input" placeholder="请输入您的问题..." />
+      <button id="send-button">发送</button>
+    </div>
   </div>
 </template>
 
+
 <script>
-import axios from "axios";
+$(function () {
+  var responseContainer = $("#response-container");
+  var messageInput = $("#message-input");
 
-export default {
-  data() {
-    return {
-      userInput: "",
-      messages: [],
-    };
-  },
-  methods: {
-    async sendMessage() {
-      const response = await axios.post(
-        "http://localhost:5005/webhooks/rest/webhook",
-        {
-          sender: "user",
-          message: this.userInput,
+  function scrollToBottom() {
+    responseContainer.scrollTop(responseContainer.prop("scrollHeight"));
+  }
+
+  $("#send-button").click(function () {
+    var message = messageInput.val();
+    messageInput.val("");
+
+    responseContainer.append("<p><b>您：</b>" + message + "</p>");
+    scrollToBottom();
+
+    $.ajax({
+      url: "http://localhost:5005/webhooks/rest/webhook",
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({
+        message: message,
+      }),
+      success: function (data) {
+        for (var i = 0; i < data.length; i++) {
+          responseContainer.append(
+            "<p><b>防洪减灾机器人：</b>" + data[i].text + "</p>"
+          );
         }
-      );
+        scrollToBottom();
+      },
+      error: function () {
+        responseContainer.append("<p>出现错误，请重试。</p>");
+        scrollToBottom();
+      },
+    });
+  });
 
-      this.messages.push({
-        sender: "user",
-        text: this.userInput,
-      });
-
-      this.userInput = "";
-
-      response.data.forEach((message) => {
-        this.messages.push({
-          sender: "bot",
-          text: message.text,
-        });
-      });
-
-      this.$nextTick(() => {
-        const container = this.$refs.responseContainer;
-        container.scrollTop = container.scrollHeight;
-      });
-    },
-  },
-};
+  messageInput.keyup(function (event) {
+    if (event.keyCode === 13) {
+      $("#send-button").click();
+    }
+  });
+});
 </script>
 
 <style scoped>
 #chat-container {
-  height: 100vh;
-}
-
-.md-card {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  margin: 30px auto;
   max-width: 600px;
-  margin: 0 auto;
+  padding: 20px;
 }
-
 #response-container {
   height: 300px;
   overflow-y: scroll;
-  scroll-behavior: smooth;
+  scroll-behavior: smooth; /* 自动滚动功能 */
   opacity: 0.7;
 }
-
-#response-container .md-list-item-text {
+#response-container p {
   margin: 10px 0;
   padding: 10px;
   border-radius: 10px;
   background-color: rgba(248, 248, 248, 0.6);
 }
-
 #input-container {
   display: flex;
-  align-items: center;
   margin-top: 20px;
 }
-
-.md-input {
+#message-input {
+  border: none;
+  border-radius: 5px;
   flex-grow: 1;
-  margin-right: 10px;
-  font-size: 72px !important;
-}
-
-#send-button {
-  min-width: 120px;
-  min-height: 60px;
-}
-
-.large-text {
   font-size: 16px;
-  line-height: 24px;
+  padding: 10px;
+  margin-right: 10px;
+}
+#send-button {
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 10px;
+}
+#send-button:hover {
+  background-color: #0069d9;
 }
 </style>
