@@ -1,59 +1,71 @@
-
 <template>
-  <div id="chat-container">
-    <div id="response-container"></div>
-    <div id="input-container">
-      <input type="text" id="message-input" placeholder="请输入您的问题..." />
-      <button id="send-button">发送</button>
-    </div>
+  <div id="chat-container" class="md-layout">
+    <md-card class="md-layout-item md-size-100 md-small-size-auto">
+      <md-card-header data-background-color="green">
+        <div class="md-title">Rasa对话机器人</div>
+      </md-card-header>
+      <md-card-content>
+        <div id="response-container">
+          <div v-for="(message, index) in messages" :key="index">
+            <strong>{{ message.sender }}：</strong>{{ message.text }}
+          </div>
+        </div>
+      </md-card-content>
+    </md-card>
+    <md-field
+      md-clearable
+      class="md-layout-item md-small-size-100"
+      style="display: flex; align-items: center"
+    >
+      <label for="chat-input">请输入您的问题...</label>
+      <md-input
+        id="chat-input"
+        v-model="inputMessage"
+        @keydown.enter="sendMessage"
+      />
+      <md-button class="md-raised md-primary" @click="sendMessage"
+        >发送</md-button
+      >
+    </md-field>
   </div>
 </template>
 
-
 <script>
-$(function () {
-  var responseContainer = $("#response-container");
-  var messageInput = $("#message-input");
+import { sendMessageToRasa } from "@/api/rasa.js";
 
-  function scrollToBottom() {
-    responseContainer.scrollTop(responseContainer.prop("scrollHeight"));
-  }
+export default {
+  data() {
+    return {
+      inputMessage: "",
+      messages: [],
+    };
+  },
+  methods: {
+    sendMessage() {
+      const message = { text: this.inputMessage, sender: "我" };
+      this.inputMessage = "";
+      this.messages.push(message);
 
-  $("#send-button").click(function () {
-    var message = messageInput.val();
-    messageInput.val("");
-
-    responseContainer.append("<p><b>您：</b>" + message + "</p>");
-    scrollToBottom();
-
-    $.ajax({
-      url: "http://localhost:5005/webhooks/rest/webhook",
-      type: "POST",
-      contentType: "application/json",
-      data: JSON.stringify({
-        message: message,
-      }),
-      success: function (data) {
-        for (var i = 0; i < data.length; i++) {
-          responseContainer.append(
-            "<p><b>防洪减灾机器人：</b>" + data[i].text + "</p>"
-          );
-        }
-        scrollToBottom();
-      },
-      error: function () {
-        responseContainer.append("<p>出现错误，请重试。</p>");
-        scrollToBottom();
-      },
-    });
-  });
-
-  messageInput.keyup(function (event) {
-    if (event.keyCode === 13) {
-      $("#send-button").click();
-    }
-  });
-});
+      sendMessageToRasa(message.text)
+        .then((response) => {
+          if (response && Array.isArray(response)) {
+            const rasaMessages = response.map((msg) => ({
+              text: msg.text,
+              sender: "Rasa对话机器人",
+            }));
+            this.messages.push(...rasaMessages);
+          }
+          this.$nextTick(() => {
+            const container = this.$el.querySelector("#response-container");
+            container.scrollTop = container.scrollHeight;
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+  },
+};
 </script>
 
 <style scoped>

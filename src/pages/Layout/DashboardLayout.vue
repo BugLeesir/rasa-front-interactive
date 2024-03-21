@@ -7,6 +7,10 @@
       :sidebar-background-image="sidebarBackgroundImage"
     >
       <mobile-menu slot="content"></mobile-menu>
+      <sidebar-link to="/typography">
+        <md-icon>library_books</md-icon>
+        <p>Rasa对话机器人</p>
+      </sidebar-link>
       <sidebar-link to="/dashboard">
         <md-icon>dashboard</md-icon>
         <p>Dashboard</p>
@@ -18,10 +22,6 @@
       <sidebar-link to="/table">
         <md-icon>content_paste</md-icon>
         <p>Table list</p>
-      </sidebar-link>
-      <sidebar-link to="/typography">
-        <md-icon>library_books</md-icon>
-        <p>Typography</p>
       </sidebar-link>
       <sidebar-link to="/icons">
         <md-icon>bubble_chart</md-icon>

@@ -26,7 +26,7 @@ service.interceptors.response.use(
     console.log(res);
 
     // if the custom code is not 20000, it is judged as an error.
-    if (res.head.code !== "0") {
+    if (res.head && res.head.code !== "0") {
       return Promise.reject(new Error(res.message || "Error"));
     } else {
       return res;

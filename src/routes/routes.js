@@ -32,7 +32,7 @@ const routes = [
       },
       {
         path: "typography",
-        name: "Typography",
+        name: "Rasa",
         component: Typography,
       },
       {

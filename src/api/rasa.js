@@ -1,13 +1,10 @@
-import service from "../request.js";
-
+import service from "@/utils/request";
 export function sendMessageToRasa(message) {
   return service({
     url: "/webhooks/rest/webhook",
     method: "post",
     data: {
-      message: {
-        text: message,
-      },
+      message: message,
       sender: "user",
     },
   });
