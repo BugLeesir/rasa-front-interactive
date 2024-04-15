@@ -2,7 +2,8 @@ import axios from "axios";
 
 // create an axios instance
 const service = axios.create({
-  baseURL: "http://localhost:5005", // url = base url + request url
+  baseURL:
+    "https://fuzzy-space-invention-674x6rvjxvgc56gx-5005.app.github.dev/", // url = base url + request url
   timeout: 5000, // request timeout
 });
 
