@@ -23,13 +23,11 @@ jobs:
         ssh -o StrictHostKeyChecking=no -p 22 bugleesir@207.46.143.24 <<EOF
         cd /home/1007878154/rasa-front-interactive
         screen -S rasa-front-interactive -X quit
-        screen -S rasa-front-interactive
-        screen -r rasa-front-interactive
         sudo su
         git pull
         # curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
         # sudo apt-get install -y nodejs
         cd /home/1007878154/rasa-front-interactive
         npm install
-        npm run dev &
+        screen -S rasa-front-interactive -d -m npm run dev
         EOF
