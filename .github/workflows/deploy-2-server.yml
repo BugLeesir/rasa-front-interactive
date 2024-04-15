@@ -31,5 +31,5 @@ jobs:
         # sudo apt-get install -y nodejs
         cd /home/1007878154/rasa-front-interactive
         npm install
-        npm run dev
+        npm run dev &
         EOF
