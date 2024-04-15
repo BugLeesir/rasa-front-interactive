@@ -1,0 +1,30 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install SSH key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.RASA_FRONT_INTERACTIVE }}
+
+    - name: Deploy to Server
+      run: |
+        ssh -o StrictHostKeyChecking=no -p 22 bugleesir@207.46.143.24 <<EOF
+        sudo su
+        cd /home/1007878154/rasa-front-interactive
+        git pull
+        npm install
+        screen -S sqlite-rasa-session -X quit
+        screen -S sqlite-rasa-session -d -m npm run dev
+        EOF
