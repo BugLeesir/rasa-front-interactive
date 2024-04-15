@@ -46,23 +46,19 @@ export default {
       this.inputMessage = "";
       this.messages.push(message);
 
-      sendMessageToRasa(message.text)
-        .then((response) => {
-          if (response && Array.isArray(response)) {
-            const rasaMessages = response.map((msg) => ({
-              text: msg.text,
-              sender: "Rasa对话机器人",
-            }));
-            this.messages.push(...rasaMessages);
-          }
-          this.$nextTick(() => {
-            const container = this.$el.querySelector("#response-container");
-            container.scrollTop = container.scrollHeight;
-          });
-        })
-        .catch((error) => {
-          console.error(error);
+      sendMessageToRasa(message.text).then((response) => {
+        if (response && Array.isArray(response)) {
+          const rasaMessages = response.map((msg) => ({
+            text: msg.text,
+            sender: "Rasa对话机器人",
+          }));
+          this.messages.push(...rasaMessages);
+        }
+        this.$nextTick(() => {
+          const container = this.$el.querySelector("#response-container");
+          container.scrollTop = container.scrollHeight;
         });
+      });
     },
   },
 };

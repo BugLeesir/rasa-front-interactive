@@ -1,0 +1,33 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install SSH key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.RASA_FRONT_INTERACTIVE }}
+
+    - name: Deploy to Server
+      run: |
+        ssh -o StrictHostKeyChecking=no -p 22 bugleesir@207.46.143.24 <<EOF
+        cd /home/1007878154/rasa-front-interactive
+        screen -S rasa-front-interactive -X quit
+        sudo su
+        git pull
+        # curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+        # sudo apt-get install -y nodejs
+        cd /home/1007878154/rasa-front-interactive
+        npm install
+        screen -S rasa-front-interactive -d -m npm run dev
+        EOF

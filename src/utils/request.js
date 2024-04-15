@@ -2,7 +2,8 @@ import axios from "axios";
 
 // create an axios instance
 const service = axios.create({
-  baseURL: "http://localhost:5005", // url = base url + request url
+  baseURL:
+    "https://fuzzy-space-invention-674x6rvjxvgc56gx-5005.app.github.dev/", // url = base url + request url
   timeout: 5000, // request timeout
 });
 
@@ -14,7 +15,6 @@ service.interceptors.request.use(
   },
   (error) => {
     // do something with request error
-    console.log(error); // for debug
     return Promise.reject(error);
   }
 );
@@ -23,7 +23,6 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     const res = response.data;
-    console.log(res);
 
     // if the custom code is not 20000, it is judged as an error.
     if (res.head && res.head.code !== "0") {
@@ -33,7 +32,6 @@ service.interceptors.response.use(
     }
   },
   (error) => {
-    console.log("err" + error); // for debug
     return Promise.reject(error);
   }
 );
