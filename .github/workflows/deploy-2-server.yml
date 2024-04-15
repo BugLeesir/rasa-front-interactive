@@ -26,5 +26,5 @@ jobs:
         git pull
         screen -S rasa-front-interactive -X quit
         screen -S rasa-front-interactive
-        cd rasa-front-interactive && npm install && npm run dev
+        cd /home/1007878154/rasa-front-interactive && npm install && npm run dev
         EOF
