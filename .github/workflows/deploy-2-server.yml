@@ -25,6 +25,6 @@ jobs:
         cd /home/1007878154/rasa-front-interactive
         git pull
         npm install
-        screen -S sqlite-rasa-session -X quit
-        screen -S sqlite-rasa-session -d -m npm run dev
+        screen -S rasa-front-interactive -X quit
+        screen -S rasa-front-interactive -d -m npm run dev
         EOF
