@@ -24,7 +24,6 @@ jobs:
         sudo su
         cd /home/1007878154/rasa-front-interactive
         git pull
-        npm install
         screen -S rasa-front-interactive -X quit
-        screen -S rasa-front-interactive -d -m npm run dev
+        screen -S rasa-front-interactive -d -m "npm install && npm run dev"
         EOF
