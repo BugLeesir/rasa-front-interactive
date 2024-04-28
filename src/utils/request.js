@@ -2,7 +2,7 @@ import axios from "axios";
 
 // create an axios instance
 const service = axios.create({
-  baseURL: "localhost:5005/", // url = base url + request url
+  baseURL: "http://207.46.143.24:5005/", // url = base url + request url
   timeout: 5000, // request timeout
 });
 
