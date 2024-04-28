@@ -29,6 +29,5 @@ jobs:
         # sudo apt-get install -y nodejs
         cd /home/1007878154/rasa-front-interactive
         npm install
-        screen -S rasa-front-interactive
-        npm run dev
+        screen -S rasa-front-interactive -m npm run dev
         EOF
